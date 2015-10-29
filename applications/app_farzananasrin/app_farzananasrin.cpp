@@ -1,6 +1,6 @@
 #include <cstdio>
 
 int main(){
-  printf("hello TTU");
+  printf("hello TTU\n");
   return 0;
 }
