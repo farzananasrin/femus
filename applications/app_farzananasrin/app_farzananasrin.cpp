@@ -36,9 +36,9 @@ using namespace femus;
 bool SetBoundaryCondition(const std::vector < double >& x, const char solName[], double& value, const int faceName, const double time) {
   bool dirichlet = true; //dirichlet
   value = 0;
-
+/*
   if (faceName == 2)
-    dirichlet = false;
+    dirichlet = false;*/
 
   return dirichlet;
 }
@@ -58,7 +58,8 @@ int main(int argc, char** args) {
   MultiLevelMesh mlMsh;
   double scalingFactor = 1.;
   // read coarse level mesh and generate finers level meshes
-  mlMsh.ReadCoarseMesh("./input/square.neu", "seventh", scalingFactor);
+ // mlMsh.ReadCoarseMesh("./input/square.neu", "seventh", scalingFactor);
+  mlMsh.GenerateCoarseBoxMesh(8,8,0,-0.5,0.5,-0.5,0.5,0.0,0.0,QUAD9,"seventh");
   /* "seventh" is the order of accuracy that is used in the gauss integration scheme
       probably in the furure it is not going to be an argument of this function   */
   unsigned numberOfUniformLevels = 3;
@@ -86,7 +87,7 @@ int main(int argc, char** args) {
 
       // attach the boundary condition function and generate boundary data
       mlSol.AttachSetBoundaryConditionFunction(SetBoundaryCondition);
-      mlSol.GenerateBdc("u");
+      mlSol.GenerateBdc("U");
 
       // define the multilevel problem attach the mlSol object to it
       MultiLevelProblem mlProb(&mlSol);
@@ -94,8 +95,8 @@ int main(int argc, char** args) {
       // add system Poisson in mlProb as a Linear Implicit System
       LinearImplicitSystem& system = mlProb.add_system < LinearImplicitSystem > ("Poisson");
 
-      // add solution "u" to system
-      system.AddSolutionToSystemPDE("u");
+      // add solution "U" to system
+      system.AddSolutionToSystemPDE("U");
 
       // attach the assembling function to system
       system.SetAssembleFunction(AssemblePoissonProblem);
@@ -156,11 +157,11 @@ void AssemblePoissonProblem(MultiLevelProblem& ml_prob) {
 
   //solution variable
   unsigned soluIndex;
-  soluIndex = mlSol->GetIndex("u");    // get the position of "u" in the ml_sol object
-  unsigned soluType = mlSol->GetSolutionType(soluIndex);    // get the finite element type for "u"
+  soluIndex = mlSol->GetIndex("U");    // get the position of "U" in the ml_sol object
+  unsigned soluType = mlSol->GetSolutionType(soluIndex);    // get the finite element type for "U"
 
   unsigned soluPdeIndex;
-  soluPdeIndex = mlPdeSys->GetSolPdeIndex("u");    // get the position of "u" in the pdeSys object
+  soluPdeIndex = mlPdeSys->GetSolPdeIndex("U");    // get the position of "U" in the pdeSys object
 
   vector < double >  solu; // local solution
   solu.reserve(maxSize);
